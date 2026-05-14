@@ -78,7 +78,7 @@ if __name__ == "__main__":
     ]
     
     # Alternatively, you can load project keys from a text file (one key per line)
-    # Uncomment the following section if you want to use this approach
+    # Uncomment the following section in case you want to use this approach
     """
     try:
         with open('project_keys.txt', 'r') as file:
