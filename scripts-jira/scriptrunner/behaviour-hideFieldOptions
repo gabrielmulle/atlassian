@@ -1,0 +1,64 @@
+try {
+    // Instance: Experiment field
+    const instanceField = getFieldById("customfield_10411");
+    const instanceValue = instanceField.getValue()?.value;
+    // Dependent field: Communication Type field
+    const numberField = getFieldById("customfield_10283");
+    // Option IDs for the Communication Type field
+    const ALL_OPTION_IDS = [
+        "12969",
+        "12970",
+        "12971"
+    ];
+    const MARKETING_OPTION_ID = "12969";
+    if (instanceValue === "Yes") {
+        numberField.setOptionsVisibility(ALL_OPTION_IDS, false);
+        numberField.setOptionsVisibility([MARKETING_OPTION_ID], true);
+    } else {
+        numberField.setOptionsVisibility(ALL_OPTION_IDS, true);
+    }
+} catch (error) {
+    console.error("Behavior execution failed:", error);
+}
+
+-- Another variant, that also makes field required
+
+try {
+    const testingField = getFieldById("customfield_10113"); // Field 1
+    const testingValue = testingField.getValue()?.value;
+    const rationaleField = getFieldById("customfield_10106"); // Field 2
+    // Option IDs for Field 2
+    const YES_OPTIONS = [
+        "14396", // Option 1
+        "14397", // Option 2
+        "14398", // Option 3
+        "14404", // Option 4
+        "14400"  // Option 5
+    ];
+    const NO_OPTIONS = [
+        "14401", // Option 1
+        "14402", // Option 2
+        "14403", // Option 3
+        "14399", // Option 4
+        "14405", // Option 5
+        "14406", // Option 6
+        "14407"  // Option 7
+    ];
+    const ALL_OPTIONS = [...YES_OPTIONS, ...NO_OPTIONS];
+    if (testingValue === "Yes") {
+        rationaleField.setOptionsVisibility(ALL_OPTIONS, false);
+        rationaleField.setOptionsVisibility(YES_OPTIONS, true);
+        rationaleField.setRequired(true);
+        rationaleField.setVisible(true);
+    } else if (testingValue === "No") {
+        rationaleField.setOptionsVisibility(ALL_OPTIONS, false);
+        rationaleField.setOptionsVisibility(NO_OPTIONS, true);
+        rationaleField.setRequired(true);
+        rationaleField.setVisible(true);
+    } else {
+        rationaleField.setOptionsVisibility(ALL_OPTIONS, false);
+        rationaleField.setRequired(false);
+    }
+} catch (error) {
+    console.error("Behavior execution failed:", error);
+}
