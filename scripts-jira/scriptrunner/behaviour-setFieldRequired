@@ -1,0 +1,32 @@
+// Trigger field  | Name: ORI/AP related? | DC id: customfield_21803 | Cloud id: customfield_10168
+// Affected field | Name: ORI/AP ID | DC id: customfield_21804 | Cloud id: customfield_10296
+
+try {
+    const triggerField = getFieldById("customfield_10168"); //ORI/AP related?
+    const affectedField = getFieldById("customfield_10296"); //ORI/AP ID
+    const triggerValue = triggerField.getValue();
+    if (triggerValue && triggerValue.value === "Yes") {
+        affectedField.setVisible(true);
+        affectedField.setRequired(true);
+    } else {
+        affectedField.setVisible(false);
+        affectedField.setRequired(false);
+    }
+} catch (error) {
+    console.error("Behavior execution failed:", error);
+}
+
+-- when the condition is a multi-select instead, use
+    if (Array.isArray(triggerValue) && triggerValue.some(option => option.value === "Yes")) {
+
+-- Set field required, no condition
+getFieldById("customfield_10842").setRequired(true);
+
+-- or
+try {
+    const field = getFieldById("customfield_10295");
+    field.setVisible(true);
+    field.setRequired(true);
+} catch (error) {
+    console.error("Behavior execution failed:", error);
+}
