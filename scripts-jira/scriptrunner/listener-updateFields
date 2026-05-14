@@ -1,0 +1,42 @@
+import com.adaptavist.hapi.cloud.jira.issues.Issues
+
+def issueKey = issue.key
+def eventIssue = Issues.getByKey(issueKey as String)
+
+logger.info("Running listener for issue ${issueKey}")
+
+try {
+    //watchers name
+    def response = get("/rest/api/3/issue/${issueKey}/watchers").asObject(Map)
+    def watchers = response.body.watchers ?: []
+    def watcherNames = watchers.collect { it.displayName }.join(", ")
+
+    //project lead
+    def projectKey = issue.fields.project.key
+    def projectResp = get("/rest/api/2/project/${projectKey}").asObject(Map)
+    def project = projectResp.body
+    def leadName = project?.lead?.displayName ?: "No project lead assigned"
+
+    //sprint name
+    def sprintFieldValue = eventIssue.getCustomFieldValue('Sprint')
+    def sprintNames = ''
+    if (sprintFieldValue) {
+        sprintNames = sprintFieldValue.collect { it.name }.join(', ')
+    }
+
+    //update
+    logger.info("Updating fields for ${issueKey}: " +
+        "[Watchers Name='${watcherNames}', Project Lead='${leadName}', Sprint Name='${sprintNames}']")
+
+    eventIssue.update {
+        setSkipScreenCheck(true)
+        setCustomFieldValue('Watchers Name', watcherNames)
+        setCustomFieldValue('Project Lead', leadName)
+        setCustomFieldValue('Sprint Name', sprintNames)
+    }
+
+    logger.info("Update Successful")
+
+} catch (Exception e) {
+    logger.error("Update failed: ${e.message}", e)
+}
