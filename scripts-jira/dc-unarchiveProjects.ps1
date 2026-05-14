@@ -7,7 +7,7 @@ $headers = @{
     Accept        = "application/json"
 }
 
-# Read each line from the file and call Jira API
+# Read each line from the file and call the Jira API
 Get-Content ".\projects.csv" | ForEach-Object {
     $line = $_.Trim()
     Write-Host "Unarchiving DC project ${line}: " -NoNewline
