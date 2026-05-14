@@ -1,0 +1,18 @@
+try {
+    const field = getFieldById("customfield_10167"); 
+    const allowedAccountIds = [
+        "557058:aaaaaaaa-bbbb",
+        "557058:eeeeeeee-ffff"
+    ];
+    const userResponse = await makeRequest("/rest/api/2/myself");
+    const { accountId } = userResponse.body;
+    const isAllowedUser = allowedAccountIds.includes(accountId);
+    //field.setVisible(isAllowedUser);
+    if (isAllowedUser) {
+        field.setVisible(true);
+    } else {
+        field.setVisible(false);
+    }
+} catch (error) {
+    console.error("Behavior execution failed:", error);
+}
