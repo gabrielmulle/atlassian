@@ -1,0 +1,12 @@
+const context = await getContext();
+ const spaceId = context.extension.project.id;
+ const spaceRoles = await makeRequest(`/rest/api/3/project/${ spaceId }/roledetails?currentMember=true`);
+ const spaceRoleNames = spaceRoles.body.map(role => role.name);
+ const workItemTypeField = getFieldById("issuetype");
+ const allowedWorkItemTypeIds = ['10133', '10134']; // IDs for Story and Task
+ if (spaceRoleNames.includes('Developers') || spaceRoleNames.includes('Administrators')) {
+     workItemTypeField.setOptionsVisibility(allowedWorkItemTypeIds, true);
+     if (!allowedWorkItemTypeIds.includes(workItemTypeField.getValue()?.id)) {
+         workItemTypeField.setValue("10133"); // Default to Story if the current value is not allowed
+     }
+ }
