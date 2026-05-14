@@ -1,0 +1,11 @@
+try {
+    const triggerField = getFieldById("customfield_10825");
+    const userResponse = await makeRequest("/rest/api/2/myself");
+    const { accountId } = userResponse.body;
+    const groupsResponse = await makeRequest(`/rest/api/2/user/groups?accountId=${accountId}`);
+    const groupNames = groupsResponse.body.map(({ name }) => name);
+    const allowedGroup = "marketing-group";
+    triggerField.setVisible(groupNames.includes(allowedGroup));
+} catch (error) {
+    console.error("Behavior execution failed:", error);
+}
