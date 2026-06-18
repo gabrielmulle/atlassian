@@ -1,0 +1,260 @@
+script By Becker
+-- Requirements
+pip3 install requests
+
+-- CSV file
+Columns: account_id, email, new_email
+
+-- Operations
+# Available operations
+[1] Activate users from CSV
+[2] Deactivate users from CSV
+[3] Bulk email change
+Type the operation number:
+
+-- How to use
+Execute in two ways
+1- python3 adoniran.py orgId orgApiKey csvFileName
+2- python3 adoniran.py (then, you will be prompted for the arguments)
+
+-- Code
+#!/usr/bin/env python3.7
+
+from datetime import datetime, timezone
+import time
+import requests
+import json
+import csv
+import sys
+
+# Test orgId, orgApiKey = 'b26d83ad-b7c0-4f61-9e98-ba1b2c38a22d', 'foLJQPN2b8tSsGv4xduJ'
+# Developed by Becker
+
+def main():
+	"""This script's purpose is to automate bulk managed accounts operations, arguments needed are orgId, orgApiKey and CSV file name."""
+
+	# If there are no arguments when executing the script, ask for required attributes
+	if len(sys.argv) == 1:
+		sys.stdout.write("\\n# This script's purpose is to automate bulk managed accounts operations, please provide organization data and CSV file to proceed.\\n\\n")
+
+		orgId = input("Organization ID: ")
+		orgApiKey = input("Organization API key: ")
+		csvFileName = input("CSV file name: ")		
+	
+	# Checks if there are 4 arguments when executing the script and assign their values to variables
+	elif len(sys.argv) == 4:
+		orgId = sys.argv[1]
+		orgApiKey = sys.argv[2]
+		csvFileName = sys.argv[3]
+
+	# Not 1 or 4 arguments, throw error message and quit the script
+	else:
+		sys.stderr.write("\\nError: 3 arguments required (orgId, orgApiKey and csvFileName)\\n\\n")
+		quit()
+
+	# Print the available operations and read user input
+	sys.stdout.write("\\n# Available operations\\n\\n[1] Activate users from CSV\\n[2] Deactivate users from CSV\\n[3] Bulk email change\\n\\n")
+	operation = input("Type the operation number: ")
+
+	# From now on, start printing the script's work logs
+	sys.stdout.write("\\n# Work logs\\n\\n")
+
+	# Use all org users for the operations, the nuke operation made for testing, else just load the CSV file and load org users to verify them.
+	if csvFileName == 'DUKE NUKEM':
+		verifiedUsers = get_organization_users(orgId, orgApiKey)
+	else:
+		usersCsv = load_from_csv(csvFileName)
+		orgUsers = get_organization_users(orgId, orgApiKey)
+		verifiedUsers = verify_users(orgUsers, usersCsv)
+
+	if operation == '1':
+		activate_users(orgApiKey, verifiedUsers)
+	elif operation == '2':
+		deactivate_users(orgApiKey, verifiedUsers)
+	elif operation == '3':
+		change_emails(orgApiKey, verifiedUsers)
+	else:
+		sys.stderr.write("Error: Invalid operation.")
+		quit()
+
+def get_organization_users(orgId, orgApiKey):
+	# https://developer.atlassian.com/cloud/admin/organization/rest/api-group-orgs/#api-orgs-orgid-users-get
+	# Checks for a cursor, if present, it uses the cursor for pagination
+
+	orgUsers = []
+	requestUrl = "https://api.atlassian.com/admin/v1/orgs/{}/users".format(orgId)
+
+	# Set the HTTP headers for the request
+	headers = {
+	   "Accept": "application/json",
+	   "Authorization": "Bearer " + orgApiKey
+	}
+
+	sys.stdout.write("{} - Loading organization's users\\n".format(datetime.now().astimezone().isoformat()))
+
+	# Execute the HTTP request
+	while True:
+		response = requests.request(
+		   "GET",
+		   requestUrl,
+		   headers=headers
+		)
+
+		# Deserialize the response text as JSON
+		responseJson = json.loads(response.text)
+
+		# Add data response to the users' list
+		orgUsers.extend(responseJson["data"])	
+
+		# If there is pagination, re-define the requestUrl to the next page from the cursor
+		if 'next' in list(responseJson["links"]):
+			requestUrl = responseJson["links"]["next"]
+		else:
+			break
+
+	if response.status_code == 200:
+		sys.stdout.write("{} - {} users loaded\\n".format(datetime.now().astimezone().isoformat(), len(orgUsers)))
+	else:
+		sys.stdout.write("{} - Unable to load organization's users: {}\\n".format(datetime.now().astimezone().isoformat(), response.text))
+
+	return orgUsers
+
+def load_from_csv(fileName):
+	with open(fileName, newline='') as f:
+		rawCsv = csv.DictReader(f)
+		usersCsv = []
+
+		for user in rawCsv:
+			if "account_id" in user:
+				usersCsv.append(dict(account_id=user["account_id"], email=user["email"]))
+			elif "new_email" in user:
+				usersCsv.append(dict(email=user["email"], new_email=user["new_email"]))
+			else:
+				usersCsv.append(dict(email=user["email"]))
+
+	return usersCsv
+
+def verify_users(orgUsers, usersCsv):
+	# Verifies if the user exists on the organization to perform changes, gets the account ID from the email if not available.
+	verifiedUsers = []
+	
+	# Perf counter
+	counter = 0
+
+	# Performance without sorting or break when user is found: 212
+	# 	with break: 148 iterations
+	#	with sorting on usersCsv: 148 iterations
+	# 	with sorting on orgUsers: 109 iterations
+	#	removing user found: 103 iterations
+
+	for userCsv in sorted(usersCsv, key=lambda k: k["email"]):
+		for user in sorted(orgUsers, key=lambda k: k["email"]):
+			
+			# Perf counter iteration increment
+			counter = counter + 1
+
+			if userCsv["email"] == user["email"]:
+				userFound = True
+				if "new_email" in userCsv:
+					verifiedUsers.append(dict(account_id=user["account_id"], email=user["email"], new_email=userCsv["new_email"]))
+				else:
+					verifiedUsers.append(dict(account_id=user["account_id"], email=user["email"]))	
+				orgUsers.pop(orgUsers.index(user))
+				break
+			else:
+				userFound = False
+		if userFound == False:
+			sys.stdout.write("{} - User [{}] not found\\n".format(datetime.now().astimezone().isoformat(), userCsv["email"]))
+
+	# Perf counter result
+	sys.stdout.write("{} - Search iterations counter: {}\\n".format(datetime.now().astimezone().isoformat(), counter))
+
+	return verifiedUsers
+
+def deactivate_users(orgApiKey, usersList):
+	# https://developer.atlassian.com/cloud/admin/user-management/rest/api-group-users/#api-users-account-id-manage-lifecycle-disable-post
+	headers = {
+		"Content-Type": "application/json",
+		"Authorization": "Bearer " + orgApiKey
+	}
+
+	for user in usersList:
+		userAccountId = user["account_id"]
+		userEmail = user["email"]
+		requestUrl = "https://api.atlassian.com/users/{}/manage/lifecycle/disable".format(userAccountId)
+
+		# REST API call
+		response = requests.request(
+			"POST",
+			requestUrl,
+			headers=headers
+		)
+
+		if response.status_code == 204:
+			sys.stdout.write('{} - User [{}] has been deactivated\\n'.format(datetime.now().astimezone().isoformat(), userEmail))
+		else:
+			sys.stdout.write('{} - User [{}] cannot be deactivated: {}\\n'.format(datetime.now().astimezone().isoformat(), userEmail, response.text))
+
+	sys.stdout.write("{} - User deactivations are finished\\n\\n".format(datetime.now().astimezone().isoformat()))
+
+def activate_users(orgApiKey, usersList):
+	# https://developer.atlassian.com/cloud/admin/user-management/rest/api-group-users/#api-users-account-id-manage-lifecycle-enable-post
+
+	headers = {
+		"Authorization": "Bearer " + orgApiKey
+	}
+
+	for user in usersList:
+		userAccountId = user["account_id"]
+		userEmail = user["email"]
+		requestUrl = "https://api.atlassian.com/users/{}/manage/lifecycle/enable".format(userAccountId)
+		
+		# REST API call
+		response = requests.request(
+			"POST",
+			requestUrl,
+			headers=headers
+		)
+
+		if response.status_code == 204:
+			sys.stdout.write("{} - User [{}] has been activated\\n".format(datetime.now().astimezone().isoformat(), userEmail))
+		else:
+			sys.stdout.write("{} - User [{}] cannot be activated: {}\\n".format(datetime.now().astimezone().isoformat(), userEmail, response.text))
+
+	sys.stdout.write("{} - User activations are finished\\n\\n".format(datetime.now().astimezone().isoformat()))
+
+def change_emails(orgApiKey, usersEmailList):
+	# https://developer.atlassian.com/cloud/admin/user-management/rest/api-group-users/#api-users-account-id-manage-email-put
+
+	headers = {
+		"Content-Type": "application/json",
+		"Authorization": "Bearer " + orgApiKey
+	}
+
+	for user in usersEmailList:
+		userAccountId = user["account_id"]
+		userEmail = user["email"]
+		userNewEmail = user["new_email"]
+		requestUrl = "https://api.atlassian.com/users/{}/manage/email".format(userAccountId)
+
+		payload = json.dumps( {
+			"email": userNewEmail
+		} )
+
+		# REST API call
+		response = requests.request(
+			"PUT",
+			requestUrl,
+			data=payload,
+			headers=headers
+		)
+
+		if response.status_code == 204:
+			sys.stdout.write("{} - User email changed from [{}] to [{}]\\n".format(datetime.now().astimezone().isoformat(), userEmail, userNewEmail))
+		else:
+			sys.stdout.write("{} - User [{}]'s email change failed: {}\\n".format(datetime.now().astimezone().isoformat(), userEmail, response.text))
+
+	sys.stdout.write("{} - User email changes are finished\\n\\n".format(datetime.now().astimezone().isoformat()))
+
+if __name__ == "__main__":
+	main()
