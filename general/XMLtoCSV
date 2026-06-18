@@ -1,0 +1,42 @@
+XML to CSV converter (for Apple Health)
+
+1. Export Apple Health and unzip it (expected to have a XML file)
+2. Save this script in a folder, along with the Apple Health XML
+3. Execute
+
+import xml.etree.ElementTree as ET
+import csv
+
+def parse_health_data(xml_file, csv_file):
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+
+    # Open the CSV file for writing
+    with open(csv_file, 'w', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        
+        # Write the header
+        header = ["Type", "Source Name", "Source Version", "Unit", "Creation Date", "Start Date", "End Date", "Value"]
+        csvwriter.writerow(header)
+        
+        # Iterate over all records in the XML
+        for record in root.findall('Record'):
+            record_type = record.get('type')
+            source_name = record.get('sourceName')
+            source_version = record.get('sourceVersion')
+            unit = record.get('unit')
+            creation_date = record.get('creationDate')
+            start_date = record.get('startDate')
+            end_date = record.get('endDate')
+            value = record.get('value')
+            
+            # Write the data row
+            csvwriter.writerow([record_type, source_name, source_version, unit, creation_date, start_date, end_date, value])
+
+if __name__ == "__main__":
+    xml_file = "apple_health_export.xml"  # Replace with your XML file path
+    csv_file = "apple_health_data.csv"    # Replace with your desired CSV file path
+    
+    parse_health_data(xml_file, csv_file)
+    print(f"Data successfully written to {csv_file}")
+
