@@ -1,0 +1,55 @@
+-- How to use
+Open the script in a text file and replace
+* instance
+* username (your email)
+* password (which will be your API token)
+* usersIds (the aaids of the users you want to add to the group)
+* group_name (the name of the group you want users in)
+
+-- Code
+
+from library.api_calls import ApiCalls
+import time
+
+def main():
+    # Authentication
+    instance = 'https://gmullerdev.atlassian.net'
+    username = 'gmuller@example.com'
+    password = 'apitoken'
+
+    # Set Authentication
+    api_call = ApiCalls()
+    api_call.setAuth('basic', username=username, password=password)
+
+    usersIds = ['557058:acc1e19e-3651-4954-a01f-47e5bfdexxxx']
+
+    group_name = 'bulktest'
+
+    log_text = ''
+
+    for user in usersIds:
+        user_data = {
+            'accountId': user
+        }
+        
+        response = api_call.request(
+            'POST', instance + '/rest/api/3/group/user?groupname=' + group_name, json_data=user_data)
+    
+        if response.status_code != 201:
+            log_text += 'user: ' + user + ' - response: \n' + \
+                getError(response) + '\n'
+        else:
+            log_text += 'user: ' + user + ' added to group ' + group_name + '\n'
+        
+        time.sleep(0.5)
+
+    print(log_text)
+
+
+def getError(response):
+    status_code = response.status_code
+    error_messages = response.text
+    return 'Status code: ' + str(status_code) + ', message: ' + error_messages
+
+if __name__ == '__main__':
+    main()
