@@ -1,0 +1,8 @@
+Documentation https://support.atlassian.com/migration/kb/api-to-fetch-id-mappings-from-jira-cloud-migration-assistant/
+Endpoint: GET https://jira.example.io/rest/migration/latest/report/id-mappings?cloudSiteUrl=https://example.atlassian.net
+
+retrieve file from Jira server, its in jira home > id-mapping. If its Windows, copy and paste, if its Linux, move to /home/gmuller, then copy to local machine with this
+scp gmuller@server-atl-production-jira-main-1:/home/gmuller/id-mappings--3b3cb2e5-6931-4b2a-9582-8cf3ff972d7d-completed.csv .
+
+In terminal, code to clean up and reduce the raw file (edit as needed)
+awk -F',' 'NR==1 || !($1 ~ /^(jira\/classic:workLog|jira:comment|jira:issue|jira:fileAttachment|jira:issueLink|jira:portletConfiguration)$/)' id-mappings--3b3cb2e5-6931-4b2a-9582-8cf3ff972d7d-completed.csv > id-mappings-filtered.csv
