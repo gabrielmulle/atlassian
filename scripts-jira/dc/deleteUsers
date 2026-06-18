@@ -1,0 +1,51 @@
+-- Shell version
+Tested in Confluence server instance
+  
+cat conf-users-to-delete.csv | while read line;
+do
+    echo "Deleting $line"
+    sleep 1
+    curl  -X POST --url "https://example.com/admin/users/removeuser-confirm.action" \\
+    -H 'content-type: application/x-www-form-urlencoded' \\
+    -H 'cookie: AWSALBAPP-1=_remove_; AWSALBAPP-2=_remove_; AWSALBAPP-3=_remove_; seraph.confluence=223739905%; mywork.tab.tasks=false; JSESSIONID=; AWSALBAPP-0=/gqo=' \\
+    --data-raw "atl_token=162e77username=$line&confirm=Delete" \\
+    --write-out '%{http_code}\\n' --silent --show-error --output /dev/null
+done | tee -a conf-deletion-logs.txt
+
+-- Python version
+-- How to use
+Create a csv file with the usernames of the users to be deleted, e.g users-to-delete.csv
+PS: this script will generate a log file as an output, it is possible also to tail -f delete-users.log
+
+-- Code
+  
+import logging
+import requests
+import json
+import csv
+
+user = "gmuller"
+pw = "passhere"
+header = {"Content-type": "application/json"}
+url = "https://jira-qa2.instance.com"
+
+logging.basicConfig(filename="delete-users.log", format='%(asctime)s %(message)s', filemode='w')
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+def deleteUser(username):
+    req = requests.delete("{}/rest/api/2/user?username={}".format(url, username), headers=header, auth=(user, pw), verify=False)
+    if req.ok:
+        logger.info("SUCCESS,{}".format(username))
+    else:
+        logger.error("FAILED,{},{},{}".format(username, req.text, req.status_code))
+
+def main(csv_file):
+    with open(csv_file) as csvfile:
+        line = csv.reader(csvfile, delimiter=',')
+        for row in line:
+            user_name = row[0]
+            deleteUser(user_name)
+
+main("users-to-delete.csv")
+
