@@ -1,0 +1,124 @@
+-- Script 1
+-- How to use
+Create a csv file (users-to-modify.csv) and add the users that need to have the email changed. The change will add a “+dummy” to the emails.
+* The first column must have the user username, the second column the user current email
+* It is possible to modify the script and make it read a column in the csv file with the desired/target email
+* Lines 39 to 46 are commented, that part is used to treat the cases where the user is lead of a project or component – in those cases, Jira cannot update the user details if the user is deactivated. If uncommented, the script will activate the users and proceed with the changes
+
+-- Code
+  
+import logging
+import requests
+import json
+import csv
+
+user = "gmuller"
+pw = "passhere"
+header = {"Content-type": "application/json"}
+
+logging.basicConfig(filename="users_update.log",
+					format='%(asctime)s %(message)s',
+					filemode='w')
+logger=logging.getLogger()
+
+#Now we are going to Set the threshold of logger to DEBUG
+logger.setLevel(logging.INFO)
+
+def activate_user(username, email):
+	payload_data = {
+		"name": username,
+		"emailAddress": email,
+		"active": True
+	}
+	data = json.dumps(payload_data)
+	return data
+
+def update_email(username, email):
+	payload_data = {
+		"name": username,
+		"emailAddress": email,
+		}
+	payload = json.dumps(payload_data)
+	req = requests.put("https://jira-qa2.instance.com/rest/api/2/user?username={}".format(username), headers=header, auth=(user,pw), data=payload, verify=False)
+	if req.ok:
+		logger.info("SUCCESS updated user,{},{}".format(username, email))
+	else:
+		logger.error("FAILED,{},{},{}".format(username, req.text, req.status_code))
+#		if "lead" in req.text:
+#			logger.info("ACTIVATING USER,{}".format(username))
+#			act_payload = activate_user(username, email)
+#			act_req = requests.put("https://jira-qa2.instance.com/rest/api/2/user?username={}".format(username), headers=header, auth=(user,pw), data=act_payload, verify=False)
+#			if act_req.ok:
+#				logger.info("SUCCESS update/activate user,{},{}".format(username, email))
+#			else:
+#				logger.error("FAILED update/activate user ,{},{},{}".format(username, req.text, req.status_code))
+
+def main(csv_file):
+    with open(csv_file) as csvfile:
+        line = csv.reader(csvfile, delimiter=',')
+        for row in line:
+            email_address = row[1]
+            user_name = row[0]
+            new_email = email_address.split("@")[0] + "+dummy@" + email_address.split("@")[1]
+            update_email(user_name, new_email)
+
+main("users-to-modify.csv")
+
+-- Script 2
+
+import logging
+import requests
+import json
+import csv
+
+user = "gmuller"
+pw = "here"
+header = {"Content-type": "application/json"}
+
+logging.basicConfig(filename="email-change-logs.log",
+					format='%(asctime)s %(message)s',
+					filemode='w')
+logger=logging.getLogger()
+
+#Now we are going to Set the threshold of logger to DEBUG
+logger.setLevel(logging.INFO)
+
+def activate_user(username, email):
+	payload_data = {
+		"name": username,
+		"emailAddress": email,
+		"active": True
+	}
+	data = json.dumps(payload_data)
+	return data
+
+def update_email(username, email):
+	payload_data = {
+		"name": username,
+		"emailAddress": email,
+		}
+	payload = json.dumps(payload_data)
+	req = requests.put("https://jira-qa2.com/rest/api/2/user?username={}".format(username), headers=header, auth=(user,pw), data=payload, verify=False)
+	if req.ok:
+		logger.info("SUCCESS updated user,{},{}".format(username, email))
+	else:
+		logger.error("FAILED,{},{},{}".format(username, req.text, req.status_code))
+		if "lead" in req.text:
+			logger.info("ACTIVATING USER,{}".format(username))
+			act_payload = activate_user(username, email)
+			act_req = requests.put("https://jira-qa2.com/rest/api/2/user?username={}".format(username), headers=header, auth=(user,pw), data=act_payload, verify=False)
+			if act_req.ok:
+				logger.info("SUCCESS update/activate user,{},{}".format(username, email))
+			else:
+				logger.error("FAILED update/activate user ,{},{},{}".format(username, req.text, req.status_code))
+
+def main(csv_file):
+    with open(csv_file) as csvfile:
+        line = csv.reader(csvfile, delimiter=',')
+        for row in line:
+            email_address = row[1]
+            user_name = row[0]
+            new_email = email_address.split("@")[0] + "+dummy@" + email_address.split("@")[1]
+            update_email(user_name, new_email)
+
+main("remaining-users.csv")
