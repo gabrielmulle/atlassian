@@ -1,0 +1,7 @@
+cat spacekey | while read line;
+do
+	echo "Deleting space $line"
+	curl -X POST --header "X-Atlassian-Token: no-check" -u "email@domain.com:<API_TOKEN>"  --request DELETE \\
+	--url "https://cloudsite.atlassian.net/wiki/rest/api/space/$line"
+	sleep 2
+done
