@@ -3,9 +3,9 @@ How to use
 This script will generate a simple CSV file with the Display Name and Email Address of all the customers in a JSM project.
 Due to GDPR policies, it will respect the current configuration for the Email Address visibility of each Atlassian Account profile.
 If the Email Address visibility of an Atlassian Account is not set to be visible to Anyone, the script will fill the empty space with "Email Address not visible".
-"""
 
-### Code
+Code below
+"""
 
 import requests, json, csv, base64, re
 
