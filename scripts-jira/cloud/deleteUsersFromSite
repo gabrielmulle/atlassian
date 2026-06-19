@@ -1,7 +1,9 @@
--- Notes
+"""
+Notes
 Since there is no official API endpoint to remove users from a cloud site, this script “simulate” an operation through the UI, so it uses the browser_cookie3 to do so.
 
--- Code
+Code below
+"""
   
 import sys, argparse
 import browser_cookie3
@@ -27,8 +29,10 @@ except EnvironmentError: # parent of IOError, OSError *and* WindowsError where a
     print('Error opening input file; does it exist or corrupted?')
     print('')
 
--- New code
+"""
+New code
 To use: replace the site id in the code, create a CSV file with all aaids, put it in the same folder, and run the python code.
+"""
 
 import sys, argparse
 import browser_cookie3
