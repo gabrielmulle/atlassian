@@ -1,0 +1,37 @@
+"""
+How to use
+Create a CSV file with the users you want to add to the organization
+email
+testorg2@test.com
+testorg3@test.com
+testorg4@test.com
+testorg5@test.com
+"""
+
+### Code
+
+import requests
+from requests.auth import HTTPBasicAuth
+import csv
+
+# Inputs
+username= 'email' #your email
+password= 'token' #your token
+csv_file= 'customerlist.csv'
+orgid = orgID #The organization ID
+pkey = 'pkey' #The project key
+base_url= 'instance.atlassian.net' #The instance URL
+
+auth = HTTPBasicAuth(username, password)
+headers = {'Content-Type': 'application/json'}
+
+count = 0
+with open(csv_file, 'r') as file:
+		reader = csv.DictReader(file)
+		for entry in reader:
+			email = entry['email']
+			url = 'https://' + base_url + '/rest/servicedesk/1/pages/people/customers/pagination/'+ pkey + '/invite/organisation?id=' + str(orgid)
+			json_data = { 'emails' : [email] }
+			r = requests.put(url, json=json_data, auth=auth, headers=headers)
+			print(str(r.status_code) + ' - ' + str(email) + ' - ' + str(count))
+			count = count + 1
