@@ -1,4 +1,6 @@
-# Add view permission
+"""
+Add view permission
+"""
 
 #!/bin/bash
 cat spaces.csv | while read line;
