@@ -1,12 +1,13 @@
--- How to use
-  
+"""
+How to use
 1. Copy all the code from the snippet.
 2. On Chrome browser bookmarks bar, right-click and Add Page.
 3. Enter any Name that you wish.
 4. In the URL box paste the copied code and save.
 5. On a Confluence page’s attachment section - click the bookmark to run.
 
--- Code
+Code below
+"""
   
 javascript:
 function main() {
