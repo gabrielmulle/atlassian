@@ -1,6 +1,8 @@
--- Autoselect (pyautogui)
+"""
+Autoselect (pyautogui)
 
--- This first script, mouse-pos.py, is to discover the mouse coordinates in the screen
+This first script, mouse-pos.py, is to discover the mouse coordinates in the screen
+"""
 
 import pyautogui
 
@@ -11,8 +13,10 @@ while True:
         print('\\b' * len(positionStr), end='', flush=True)
 
 
--- Run the script in the second screen, and in the main screen, move the cursor to the place where you want to see the coordinate. Take note of the coordinates, we will need it to set up the second script.
--- The second script, autoselect.py, will autonomously select the projects and spaces in the CMA tools based on the names or keys from a CSV file.
+"""
+Run the script in the second screen, and in the main screen, move the cursor to the place where you want to see the coordinate. Take note of the coordinates, we will need it to set up the second script.
+The second script, autoselect.py, will autonomously select the projects and spaces in the CMA tools based on the names or keys from a CSV file.
+"""
 
 import pandas
 import time
