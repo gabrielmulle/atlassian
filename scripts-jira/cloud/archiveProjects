@@ -1,6 +1,8 @@
--- How to use
-Create a CSV file with the keys of the projects you want to archive
-Execute the script below (sh archive.sh)
+"""
+How to use
+1. Create a CSV file with the keys of the projects you want to archive
+2. Execute the script below (sh archive.sh)
+"""
 
 cat projects.csv | while read line;
 do
@@ -10,8 +12,9 @@ do
     echo 
 done
 
-
--- Powerscript (.ps1) variant for MS environments
+"""
+Powerscript (.ps1) variant for MS environments
+"""
 
 # Build Basic Auth header
 $pair   = "ATATT3xFfGF0KKKxxxxxzPxxxxxxx"
