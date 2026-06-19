@@ -3,7 +3,7 @@ import json
 import requests
 import logging
 
-tempo_auctane_sandbox_token = 'xxxx'
+tempo_sandbox_token = 'xxxx'
 tempo_token = 'XNYG4t0gZcQJTLCgZV4s0uyvzZ'
 headers = {'Authorization': 'Bearer XNYG4t0gZcQJTLCgZV4zfEPs0uyvzZ', 'Content-type': 'application/json'}
 
