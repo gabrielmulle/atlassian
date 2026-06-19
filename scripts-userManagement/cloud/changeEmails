@@ -1,7 +1,8 @@
--- How to use
-
+"""
+How to use
 1. Create a csv file; in the first column add the aaid of the current account, in the second column add the desired email
 2. Run the code below
+"""
 
 #!/bin/bash
 file=file.csv
@@ -34,10 +35,11 @@ curl --request PUT \\
 
 done <$file
 
--- Alternative, in case you want to obfuscate emails and append something to the old emails.
-  
+"""
+Alternative, in case you want to obfuscate emails and append something to the old emails.
 1. Create a csv file; in the first column add the aaid of the account you want to obfuscate, in the second column add its current email
 2. Run the code below
+"""
 
 #!/bin/bash
 file=file2.csv
