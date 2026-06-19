@@ -1,4 +1,4 @@
-"""
+/*
 How to use
 1. Copy all the code from the snippet.
 2. On Chrome browser bookmarks bar, right-click and Add Page.
@@ -8,7 +8,7 @@ How to use
 6. When prompted, enter the file extension(s) that you want to bulk delete from the attachment section. e.g zip, png, xml
 
 Code below
-"""
+*/
 
 javascript:
 function main() {

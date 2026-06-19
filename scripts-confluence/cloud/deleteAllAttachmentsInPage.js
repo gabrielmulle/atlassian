@@ -1,4 +1,4 @@
-"""
+/*
 How to use
 1. Copy all the code from the snippet.
 2. On Chrome browser bookmarks bar, right-click and Add Page.
@@ -7,7 +7,7 @@ How to use
 5. On a Confluence page’s attachment section - click the bookmark to run.
 
 Code below
-"""
+*/
   
 javascript:
 function main() {

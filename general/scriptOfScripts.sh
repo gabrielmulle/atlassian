@@ -3,6 +3,8 @@ script by Chico
 This script can be updated to do things in bulk. "cookie" get from inspecting the page while doing the action once in the UI, and "url" can replace with anything
 """
 
+#!/bin/bash
+
 cookie='<my_cookie>'
 cat users.csv | while read line;
 do

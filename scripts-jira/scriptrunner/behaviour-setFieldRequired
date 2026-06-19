@@ -1,7 +1,7 @@
--- Simply set field required, no condition
+// Simply set field required, no condition
 getFieldById("customfield_10842").setRequired(true);
 
--- Alternative
+// Alternative
 try {
     const field = getFieldById("customfield_10295");
     field.setVisible(true);
@@ -10,7 +10,7 @@ try {
     console.error("Behavior execution failed:", error);
 }
 
--- Set field required based on another field value
+// Set field required based on another field value
 
 // Trigger field  | Name: Field1 | DC id: customfield_21803 | Cloud id: customfield_10168
 // Affected field | Name: Field2 | DC id: customfield_21804 | Cloud id: customfield_10296
@@ -30,5 +30,5 @@ try {
     console.error("Behavior execution failed:", error);
 }
 
--- when the condition is a multi-select instead, use
+// when the condition is a multi-select instead, use
     if (Array.isArray(triggerValue) && triggerValue.some(option => option.value === "Yes")) {

@@ -21,7 +21,8 @@ try {
     console.error("Behavior execution failed:", error);
 }
 
--- Another variant, that also makes field required
+
+// Another variant, that also makes field required
 
 try {
     const testingField = getFieldById("customfield_10113"); // Field 1
