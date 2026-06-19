@@ -1,3 +1,33 @@
+"""
+Requirements
+Need an input CSV file with these headers:
+name,idUuid
+
+To get only enabled rules:
+- export (JSON) the rules from DC and cloud
+- convert from JSON to CSV
+- lookup by name to get only active rules
+
+Note
+To convert JSON to CSV, you can use jq on the terminal
+
+brew install jq
+
+command for cloud file
+jq -r '
+["name","idUuid"],
+(.rules[] | [.name, .idUuid])
+| @csv
+' rulescloud.json > rulescloudnew.csv
+
+command for dc file
+jq -r '
+["name","state"],
+(.rules[] | [.name, .state])
+| @csv
+' rulesdc.json > rulesdcnew.csv
+"""
+
 import csv
 import requests
 import time
@@ -107,31 +137,3 @@ with open(INPUT_CSV, mode="r", encoding="utf-8-sig", newline="") as infile, \
         time.sleep(SLEEP_SECONDS)
 
 print(f"\nDone. Log saved to: {LOG_CSV}")
-
--- Requirements
-Need an input CSV file with these headers:
-name,idUuid
-
-To get only enabled rules:
-- export (JSON) the rules from DC and cloud
-- convert from JSON to CSV
-- lookup by name to get only active rules
-
-Note
-To convert JSON to CSV, you can use jq on the terminal
-
-brew install jq
-
-command for cloud file
-jq -r '
-["name","idUuid"],
-(.rules[] | [.name, .idUuid])
-| @csv
-' rulescloud.json > rulescloudnew.csv
-
-command for dc file
-jq -r '
-["name","state"],
-(.rules[] | [.name, .state])
-| @csv
-' rulesdc.json > rulesdcnew.csv
