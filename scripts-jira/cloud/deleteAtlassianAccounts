@@ -1,11 +1,13 @@
--- Script 1
+"""
+Script 1
 
--- Requirements
+Requirements
 pip3 install browser-cookie3 pip3 install requests
 
--- How to use
+How to use
 1. Replace the aaid1, aaid2, etc for real Atlassian Account id of the users
-2. Run the code
+2. Run the code below
+"""
   
 import browser_cookie3
 import requests
@@ -19,7 +21,11 @@ for i in users_to_delete:
     response = requests.delete(url, cookies = cookies)
     print(response)
 
--- Script 2
+
+"""
+Script 2
+"""
+
 import sys, argparse, requests, json, browser_cookie3
 from datetime import datetime
 from csv import reader
