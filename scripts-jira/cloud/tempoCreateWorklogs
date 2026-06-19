@@ -1,0 +1,43 @@
+import csv
+import json
+import requests
+import logging
+
+tempo_auctane_sandbox_token = 'xxxx'
+tempo_token = 'XNYG4t0gZcQJTLCgZV4s0uyvzZ'
+headers = {'Authorization': 'Bearer XNYG4t0gZcQJTLCgZV4zfEPs0uyvzZ', 'Content-type': 'application/json'}
+
+logging.basicConfig(filename="worklogs_migration_april2.log", format='%(asctime)s %(message)s', filemode='w')
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+def create_worklog_payload(description, timestamp, timespent, issuekey, author):
+    payload = {
+        "description": description,
+        "issueKey": issuekey,
+        "authorAccountId": author,
+        "timeSpentSeconds": timespent,
+        "startDate": timestamp
+    }
+    data = json.dumps(payload)
+    return data
+
+def main(csv_file):
+    with open(csv_file) as csvfile:
+        line = csv.reader(csvfile, delimiter=',')
+        for row in line:
+            worklog_id = row[0]
+            issuekey = row[2]
+            all_worklog = row[4]
+            worklog_description = all_worklog.split(';')[0]
+            worklog_time = all_worklog.split(';')[1].split('T')[0]
+            worklog_author = all_worklog.split(';')[2]
+            worklog_timespent = all_worklog.split(';')[3]
+            payload = create_worklog_payload(worklog_description, worklog_time, worklog_timespent, issuekey, worklog_author)
+            req = requests.post('<https://api.tempo.io/4/worklogs>', headers=headers, data=payload)
+            if req.ok:
+                logger.info("SUCCESS - Added worklog {} to issue: {}: new_worklog_id = {}".format(worklog_id, issuekey, req.json()["tempoWorklogId"]))
+            else:
+                logger.error("FAILED - Fail to add worklog {} to issue: {} - {} - {}".format(worklog_id, issuekey, req.text, req.status_code))
+
+main('worklogs_april2.csv')
