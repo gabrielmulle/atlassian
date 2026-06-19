@@ -1,9 +1,9 @@
 """
 How to use
 python3 extractPageIdFromSpaceKey.py <example.atlassian.net> <'space_key'>
-"""
 
-### Code
+Code below
+"""
 
 # Author: David Ingty, dingty@atlassian.net
 # Date: 21 Jan 2021
