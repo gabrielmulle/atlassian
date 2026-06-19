@@ -1,11 +1,12 @@
--- How to use
+"""
+How to use
 1. Create a CSV file with the AAID in the first column, and the desired name in the second. Example: 
 712020:1c2d7770-359a-4120-a8a5-c432d5d95e4b, Source Gabriel Mulle
 557058:e89104c1-8242-4244-b261-6705fcd09067, Target Gabriel Mulle
 2. Replace the ABCDE in line 4 with your org api token
-3. Execute the script
+3. Execute the script below
+"""
 
--- Code
 #!/bin/bash
 
 file="userstoupdate.csv"
