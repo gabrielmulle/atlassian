@@ -6,9 +6,9 @@ How to use
 4. In the URL box paste the copied code and save.
 5. On a Confluence page’s attachment section - click the bookmark to run.
 6. When prompted, enter the file extension(s) that you want to bulk delete from the attachment section. e.g zip, png, xml
+
+Code below
 """
-  
-### Code
 
 javascript:
 function main() {
