@@ -1,5 +1,7 @@
--- Shell version
+"""
+Shell version
 Tested in Confluence server instance
+"""
   
 cat conf-users-to-delete.csv | while read line;
 do
@@ -12,12 +14,15 @@ do
     --write-out '%{http_code}\\n' --silent --show-error --output /dev/null
 done | tee -a conf-deletion-logs.txt
 
--- Python version
--- How to use
+
+"""
+Python version
+How to use
 Create a csv file with the usernames of the users to be deleted, e.g users-to-delete.csv
 PS: this script will generate a log file as an output, it is possible also to tail -f delete-users.log
 
--- Code
+Code below
+"""
   
 import logging
 import requests
