@@ -1,8 +1,10 @@
+"""
 XML to CSV converter (for Apple Health)
 
 1. Export Apple Health and unzip it (expected to have a XML file)
 2. Save this script in a folder, along with the Apple Health XML
 3. Execute
+"""
 
 import xml.etree.ElementTree as ET
 import csv
