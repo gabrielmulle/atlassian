@@ -1,11 +1,13 @@
--- Script 1
--- How to use
+"""
+Script 1
+How to use
 Create a csv file (users-to-modify.csv) and add the users that need to have the email changed. The change will add a “+dummy” to the emails.
 * The first column must have the user username, the second column the user current email
 * It is possible to modify the script and make it read a column in the csv file with the desired/target email
 * Lines 39 to 46 are commented, that part is used to treat the cases where the user is lead of a project or component – in those cases, Jira cannot update the user details if the user is deactivated. If uncommented, the script will activate the users and proceed with the changes
 
--- Code
+Code below
+"""
   
 import logging
 import requests
@@ -64,7 +66,9 @@ def main(csv_file):
 
 main("users-to-modify.csv")
 
--- Script 2
+"""
+Script 2
+"""
 
 import logging
 import requests
