@@ -1,4 +1,6 @@
+"""
 script By Becker
+
 -- Requirements
 pip3 install requests
 
@@ -17,7 +19,9 @@ Execute in two ways
 1- python3 adoniran.py orgId orgApiKey csvFileName
 2- python3 adoniran.py (then, you will be prompted for the arguments)
 
--- Code
+-- Code below
+"""
+
 #!/usr/bin/env python3.7
 
 from datetime import datetime, timezone
