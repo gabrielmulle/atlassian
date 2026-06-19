@@ -1,6 +1,8 @@
--- Atlassian method, Source here, https://bitbucket.org/atlassianlabs/jira-read-only-mode-migrations/src/master/
+"""
+Atlassian method, Source here, https://bitbucket.org/atlassianlabs/jira-read-only-mode-migrations/src/master/
 
--- Python method below
+Python method below
+"""
 
 import json
 import requests
