@@ -1,4 +1,6 @@
--- Simple shell script to add/replace comments
+"""
+Simple shell script to add/replace comments
+"""
 
 #!/bin/bash
 
@@ -9,8 +11,9 @@ do
    sed -i '' "s/$source/$target/g" comments.csv
 done
 
-
--- Pyhton script
+"""
+Pyhton script
+"""
 
 import csv
 import sys
