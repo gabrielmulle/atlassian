@@ -1,9 +1,11 @@
--- Endpoint
+"""
+Endpoint
 https://developer.atlassian.com/cloud/admin/user-management/rest/api-group-lifecycle/#api-users-account-id-manage-lifecycle-disable-post
 
--- How to use
+How to use
 1. Create a CSV file with the account IDs in that need to be deactivated
 2. Run the script below
+"""
   
 #!/bin/bash
 file=userstodeactivatetest.csv
@@ -32,10 +34,11 @@ curl --request POST \
 
 done <$file
 
--- Python version
-  
+"""
+Python version  
 1. Create a CSV file with the account IDs in that need to be deactivated
 2. Run the script below
+"""
   
 from requests import post
 import pandas as pd
