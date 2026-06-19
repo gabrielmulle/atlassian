@@ -1,0 +1,34 @@
+"""
+How to use
+Create a CSV with the issue keys
+issuekey
+EDT-19
+EDT-18
+EDT-17
+EDT-12
+"""
+
+### Code
+
+import requests
+from requests.auth import HTTPBasicAuth
+import csv
+
+# Inputs
+username= 'email@atlassian.com'
+password= 'token'
+csv_file= 'issuekey.csv'
+base_url= 'instance.atlassian.net'
+auth = HTTPBasicAuth(username, password)
+headers = {'Content-Type': 'application/json'}
+
+count = 1
+with open(csv_file, 'r') as file:
+	reader = csv.DictReader(file)
+	for entry in reader:
+		issuekey = entry['issuekey']
+		url = 'https://' + base_url + '/rest/api/3/issue/' + str(issuekey)
+		json_data = [issuekey]
+		r = requests.delete(url, json=json_data, auth=auth, headers=headers)
+		print(str(issuekey) + ' - ' + str(r.status_code) + ' - ' + str(count))
+		count = count + 1
