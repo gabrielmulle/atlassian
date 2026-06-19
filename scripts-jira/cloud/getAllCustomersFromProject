@@ -1,0 +1,60 @@
+"""
+How to use
+This script will generate a simple CSV file with the Display Name and Email Address of all the customers in a JSM project.
+Due to GDPR policies, it will respect the current configuration for the Email Address visibility of each Atlassian Account profile.
+If the Email Address visibility of an Atlassian Account is not set to be visible to Anyone, the script will fill the empty space with "Email Address not visible".
+"""
+
+### Code
+
+import requests, json, csv, base64, re
+
+instance = input("Enter your site name (without https:// and .atlassian.net: ")
+project = input("Enter your JSM Project Key: ")
+
+url = 'https://' + instance + '.atlassian.net/rest/servicedeskapi/servicedesk/' + project.upper() + '/customer'
+
+auth = input("Enter your EMAIL or EMAIL:APITOKEN or BASE64 EMAIL:APITOKEN: ")
+
+regex1 = r"@"
+regex2 = r":"
+match1 = re.search(regex1, auth)
+match2 = re.search(regex2, auth)
+
+while True:
+    if match1 and not match2:
+        apitoken = input("Enter your API Token: ")
+        b64 = base64.b64encode((auth + ':' + apitoken).encode('ascii'))
+        b64auth = str(b64, 'utf-8')
+    elif match1 and match2:
+        b64 = base64.b64encode((auth).encode('ascii'))
+        b64auth = str(b64, 'utf-8')
+    else:
+        b64auth = auth
+    break
+
+with open("customers.csv", "w") as f:
+    pass
+
+while True:
+    headers = {
+        "Accept": "application/json",
+        "Authorization": 'Basic ' + b64auth,
+        "X-ExperimentalApi": "opt-in",
+    }
+
+    response = requests.request("GET", url, headers=headers)
+
+    data = json.loads(response.text)
+
+    with open("customers.csv", "a") as f:
+        customers = csv.writer(f)
+        for person in data["values"]:
+            if not (person["emailAddress"]):
+                customers.writerow([person["displayName"], "Email Address not visible"])
+            else:
+                customers.writerow([person["displayName"], person["emailAddress"]])
+
+    if data["isLastPage"]:
+        break
+    url = data["_links"]["next"]
