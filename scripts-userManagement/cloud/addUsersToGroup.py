@@ -3,55 +3,45 @@ How to use
 Open the script in a text file and replace
 * instance
 * username (your email)
-* password (which will be your API token)
+* api_token 
 * usersIds (the aaids of the users you want to add to the group)
 * group_name (the name of the group you want users in)
 
 Code below
 """
 
-from library.api_calls import ApiCalls
+import requests
+from requests.auth import HTTPBasicAuth
 import time
 
-def main():
-    # Authentication
-    instance = 'https://gmullerdev.atlassian.net'
-    username = 'gmuller@example.com'
-    password = 'apitoken'
+instance = 'https://instance.atlassian.net'
+username = 'gabe@email.com'
+api_token = 'ATATT3xFfGF0aaaaaaa'
 
-    # Set Authentication
-    api_call = ApiCalls()
-    api_call.setAuth('basic', username=username, password=password)
+group_name = "groupHere"
 
-    usersIds = ['557058:acc1e19e-3651-4954-a01f-47e5bfdexxxx']
+users_ids = [
+'712020:e9479bxxxxxxxxccf7',
+'712020:e43bxxxxxxxxxx120df'
+]
 
-    group_name = 'bulktest'
+url = f"{instance}/rest/api/3/group/user?groupname={group_name}"
 
-    log_text = ''
+for account_id in users_ids:
+    response = requests.post(
+        url,
+        auth=HTTPBasicAuth(username, api_token),
+        headers={"Content-Type": "application/json"},
+        json={"accountId": account_id}
+    )
 
-    for user in usersIds:
-        user_data = {
-            'accountId': user
-        }
-        
-        response = api_call.request(
-            'POST', instance + '/rest/api/3/group/user?groupname=' + group_name, json_data=user_data)
-    
-        if response.status_code != 201:
-            log_text += 'user: ' + user + ' - response: \n' + \
-                getError(response) + '\n'
-        else:
-            log_text += 'user: ' + user + ' added to group ' + group_name + '\n'
-        
-        time.sleep(0.5)
+    if response.status_code == 201:
+        print(f"{account_id} added to group {group_name}")
+    else:
+        print(
+            f"{account_id} failed - "
+            f"Status: {response.status_code} - "
+            f"Response: {response.text}"
+        )
 
-    print(log_text)
-
-
-def getError(response):
-    status_code = response.status_code
-    error_messages = response.text
-    return 'Status code: ' + str(status_code) + ', message: ' + error_messages
-
-if __name__ == '__main__':
-    main()
+    time.sleep(0.5)
