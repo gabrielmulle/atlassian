@@ -29,7 +29,7 @@ pyautogui.FAILSAFE = True
 # PS: The 'pyautogui.FAILSAFE = True' is a failsafe feature that will stop the script from executing if you move the mouse to the 0 position (top left corner)
 
 # In this case, I'm use an absolute location/folder, but you can just use the csf file name (e.g projects.csv), and put the csv in the same location as the script
-source = pandas.read_csv('/Users/gabrielmuller/Documents/Clients/NCR/autoselect/projects.csv')
+source = pandas.read_csv('/Users/gabrielmuller/Documents/Client/autoselect/projects.csv')
 
 # 5 seconds to prepare
 time.sleep(5) 
