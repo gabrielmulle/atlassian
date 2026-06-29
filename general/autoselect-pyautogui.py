@@ -5,12 +5,19 @@ This first script, mouse-pos.py, is to discover the mouse coordinates in the scr
 """
 
 import pyautogui
+import time
 
-while True:
+print("Pressione CTRL+C para sair.\n")
+
+try:
+    while True:
         x, y = pyautogui.position()
-        positionStr = 'x: ' + str(x).rjust(4) + ' y: ' + str(y).rjust(4)
-        print(positionStr, end='')
-        print('\\b' * len(positionStr), end='', flush=True)
+        positionStr = f"x: {str(x).rjust(4)} y: {str(y).rjust(4)}"
+        print(positionStr, end='\r', flush=True)
+        time.sleep(0.05) 
+        
+except KeyboardInterrupt:
+    print('\nscript finalized.')
 
 
 """
