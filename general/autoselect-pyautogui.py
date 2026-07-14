@@ -64,3 +64,80 @@ for _, row in source.iterrows():
     pyautogui.click()
     time.sleep(1)
 
+"""
+Alternative script below, without reading a CSV file
+"""
+import pandas
+import time
+import pyautogui
+
+pyautogui.FAILSAFE = True # PS: The 'pyautogui.FAILSAFE = True' is a failsafe feature that will stop the script from executing if you move the mouse to the 0 position (top left corner)
+
+# 5 seconds to prepare
+print("script will start in 5s... select the previous user in the spreadsheet")
+time.sleep(5) 
+print("script in progress... to stop, move the mouse to the top left corner")
+
+while True:
+    
+    # move down to next user
+    pyautogui.press('down')
+    time.sleep(1)
+
+    # copy
+    pyautogui.hotkey('ctrl', 'c')
+    time.sleep(1)
+
+    # move to Jira search
+    pyautogui.moveTo(800, 425, duration=0.3, tween=pyautogui.easeInOutQuad) 
+    pyautogui.click()
+    time.sleep(1)
+
+    # select all
+    pyautogui.hotkey('ctrl', 'a')
+    time.sleep(1)
+
+    # paste
+    pyautogui.hotkey('ctrl', 'v')
+    time.sleep(1)
+
+    # enter to search user
+    pyautogui.press('enter')
+    time.sleep(2)
+
+    # select spreadsheet
+    pyautogui.moveTo(130, 875, duration=0.3, tween=pyautogui.easeInOutQuad) 
+    pyautogui.click()
+    time.sleep(1)
+
+    # move right to select new email
+    pyautogui.press('right')
+    time.sleep(1)
+
+    # copy new email
+    pyautogui.hotkey('ctrl', 'c')
+    time.sleep(1)
+
+    # move to Jira Edit
+    pyautogui.moveTo(1570, 555, duration=0.3, tween=pyautogui.easeInOutQuad) 
+    pyautogui.click()
+    time.sleep(1)
+
+    # tab twice to select email field
+    pyautogui.press('tab')
+    time.sleep(0.5)
+    pyautogui.press('tab')
+    time.sleep(0.5)
+
+    # select all
+    pyautogui.hotkey('ctrl', 'a')
+    time.sleep(0.5)
+
+    # paste
+    pyautogui.hotkey('ctrl', 'v')
+    time.sleep(0.5)
+
+    # update user
+    pyautogui.moveTo(1250, 515, duration=0.3, tween=pyautogui.easeInOutQuad) 
+    pyautogui.click()
+    time.sleep(1.5)
