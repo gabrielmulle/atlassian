@@ -1,0 +1,49 @@
+//JQL query defining past issues to update (past 6m)
+def query = 'created >= 2025-04-01 and updated <= 2025-10-08 and priority = "Not Assigned"'
+
+//issues returned by the query in each iteration
+def search = get("/rest/api/3/search/jql")
+            .queryString("jql",query)
+            .queryString("startAt",0)
+            .queryString("maxResults",100)
+            .queryString("expand","names,schema")
+            .asObject(Map)
+
+Map searchResult = search.body 
+
+//retrieve total, defaulting to 0 if null
+def total = searchResult?.total ?: 0 
+int iterations = Math.ceil(total / 100) 
+
+logger.info("The total issues found are approximately ${total}. Will run ${iterations} iterations.") 
+int i = 0;
+
+do{
+//handle a block of 100 issues returned by search 
+searchResult.issues.each { Map issue ->
+  logger.info("${issue.key}")
+
+//update issues here
+def eventIssue = Issues.getByKey(issue.key as String)
+def response = get("/rest/api/3/issue/${issue.key}/watchers").asObject(Map)
+def watchers = response.body.watchers ?: []
+def watcherNames = watchers.collect { it.displayName }.join(", ")
+
+eventIssue.update {
+    setSkipScreenCheck(true)
+    setCustomFieldValue('Watchers Name', watcherNames)
+}
+}  
+
+int nextBlock = 100*(i+1) 
+//take next block of 100 issues 
+  search = get("/rest/api/3/search/jql")
+            .queryString("jql",query)
+            .queryString("startAt",nextBlock)
+            .queryString("maxResults",100)
+            .queryString("expand","names,schema")
+            .asObject(Map)
+            
+  searchResult = search.body
+  i++;
+}while (i<iterations)
