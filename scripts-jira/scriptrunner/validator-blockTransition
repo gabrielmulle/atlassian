@@ -1,0 +1,5 @@
+// Field1 must not be Unknown when Done
+!(
+  issue.customfield_10001?.value == "Unknown"
+  && issue.resolution?.name == "Done"
+)
