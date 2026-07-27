@@ -1,0 +1,10 @@
+import groovy.json.JsonSlurper
+
+enableCache = {-> false}
+
+// REST API call to get watchers
+def response = get("/rest/api/3/issue/${issue.key}/watchers").asObject(Map)
+def watchers = response.body.watchers
+
+// Return a comma-separated list of display names
+watchers.collect { it.displayName }.join(", ")
