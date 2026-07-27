@@ -2,6 +2,23 @@ import com.adaptavist.hapi.cloud.jira.issues.Issues
 
 def issueKey = issue.key
 def eventIssue = Issues.getByKey(issueKey as String)
+def toAdf(text) {
+    return [
+        "type": "doc",
+        "version": 1,
+        "content": [
+            [
+                "type": "paragraph",
+                "content": [
+                    [
+                        "type": "text",
+                        "text": text ?: ""
+                    ]
+                ]
+            ]
+        ]
+    ]
+}
 
 logger.info("Running listener for issue ${issueKey}")
 
@@ -11,12 +28,6 @@ try {
     def watchers = response.body.watchers ?: []
     def watcherNames = watchers.collect { it.displayName }.join(", ")
 
-    //project lead
-    def projectKey = issue.fields.project.key
-    def projectResp = get("/rest/api/2/project/${projectKey}").asObject(Map)
-    def project = projectResp.body
-    def leadName = project?.lead?.displayName ?: "No project lead assigned"
-
     //sprint name
     def sprintFieldValue = eventIssue.getCustomFieldValue('Sprint')
     def sprintNames = ''
@@ -24,19 +35,30 @@ try {
         sprintNames = sprintFieldValue.collect { it.name }.join(', ')
     }
 
+    //payload
+    def payload = [
+        fields: [
+            'customfield_10001': toAdf(watcherNames),
+            'customfield_10002': toAdf(sprintNames)
+        ]
+    ]
+
     //update
     logger.info("Updating fields for ${issueKey}: " +
-        "[Watchers Name='${watcherNames}', Project Lead='${leadName}', Sprint Name='${sprintNames}']")
+        "[Watchers Name='${watcherNames}', Sprint Name='${sprintNames}'] with notifications suppressed.")
 
-    eventIssue.update {
-        setSkipScreenCheck(true)
-        setCustomFieldValue('Watchers Name', watcherNames)
-        setCustomFieldValue('Project Lead', leadName)
-        setCustomFieldValue('Sprint Name', sprintNames)
+    def updateResponse = put("/rest/api/3/issue/${issueKey}?notifyUsers=false")
+        .header('Content-Type', 'application/json')
+        .body(payload)
+        .asString() 
+
+    if (updateResponse.status >= 200 && updateResponse.status < 300) {
+        logger.info("Update Successful. Status: ${updateResponse.status}")
+    } else {
+        logger.error("Update failed. Status: ${updateResponse.status}, Response: ${updateResponse.body}")
+        throw new Exception("REST API update failed.")
     }
 
-    logger.info("Update Successful")
-
 } catch (Exception e) {
-    logger.error("Update failed: ${e.message}", e)
+    logger.error("Listener failed: ${e.message}", e)
 }
