@@ -1,0 +1,13 @@
+enableCache = {-> false}
+
+// Get the Sprint custom field
+def sprintField = issue.fields.find { it.key == "customfield_100001" }
+
+def sprints = sprintField?.value 
+
+if (sprints) {
+    // Collect sprint names and join with comma
+    return sprints.collect { it.name }.join(", ")
+} else {
+    return ""
+}
