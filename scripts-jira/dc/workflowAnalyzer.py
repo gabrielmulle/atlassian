@@ -3,8 +3,10 @@ How to use
 Analyze Jira workflows to find specific class usage. The input file should be jiraworkflows table dump. An example SQL command to export only active workflows:
 select * from jiraworkflows where workflowname in (select workflowname from jiraworkflows where workflowname in (select distinct workflow from workflowschemeentity));
 
+If exporting to CSV is an issue (MySQL can be), export to XML, and convert XML to CSV with https://github.com/gabrielmulle/atlassian/blob/main/general/xml2csv.py
+
 How to run it
-python3 wfconversion.py -w <nome do teu arquivo extraído pela banco>.csv -ac jsu -f csv -o workflowsjsu
+python3 wfconversion.py -w <file name>.csv -ac jsu -f csv -o workflowsjsu
 
 Need to execute once for each app (com.onresolve.jira.groovy, com.googlecode.jsu, com.innovalog.jmwe)
 
